@@ -29,3 +29,6 @@ Target Framework is not installed.
 
 The final step is to add a `RedistList` folder under your newly created `v1.0`-folder. 
 Inside this folder you need to download the [FrameworkList.xml file](https://github.com/downloads/follesoe/VSMonoTouch/FrameworkList.xml). 
+
+## Credit ## 
+The MonoTouchFlavorProjectFactory is based on [Jamie Briant's implementation](https://github.com/jamiebriant/VsMono).

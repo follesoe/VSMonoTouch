@@ -1,4 +1,6 @@
 # MonoTouch for Visual Studio 2010
+
+## About
 This Visual Studio 2010 extension enables you to open and compile MonoTouch projects without 
 having to modify the .cproj file. The extension makes Visual Studio 2010 recognize the project 
 types created by MonoTouch. It will also make sure any XIB files are ignored by Visual Studio 

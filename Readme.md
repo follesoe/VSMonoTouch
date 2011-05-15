@@ -27,5 +27,5 @@ which will make Visual Studio look for reference assemblies in the `v1.0` folder
 If you don't copy your MonoTouch files to this directory Visual Studio will complain that the 
 Target Framework is not installed.
 
-The final step is to add a "RedistList" folder under your newly created "v1.0"-folder. 
+The final step is to add a `RedistList` folder under your newly created `v1.0`-folder. 
 Inside this folder you need to download the [FrameworkList.xml file](https://github.com/downloads/follesoe/VSMonoTouch/FrameworkList.xml). 

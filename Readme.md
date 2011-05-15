@@ -14,16 +14,17 @@ Visual Studio 2010 solution. The extension will also enable MonoTouch developers
 familiar tools such as ReSharper and Visual Studio when editing code.
 
 ## Installation
-[Download and run the vsix-package](https://github.com/downloads/follesoe/VSMonoTouch/VSMonoTouch.vsix)
-from the github page. You also need to copy the MonoTouch 
-binaries from your Mac development environment to your Visual Studio 2010 development environment.
+1. [Download and run the vsix-package](https://github.com/downloads/follesoe/VSMonoTouch/VSMonoTouch.vsix)
+from the github page.
+
+2. Copy the MonoTouch binaries from your Mac development environment to your Visual Studio 2010 development environment.
 Copy all the files from `/Developer/MonoTouch/usr/lib/mono/2.1/` on your Mac to 
 `C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v1.0` on your PC.
 
-Add a `RedistList`-folder under your newly created `v1.0`-folder. 
+3. Add a `RedistList`-folder under your newly created `v1.0`-folder. 
 Download the [FrameworkList.xml file](https://github.com/downloads/follesoe/VSMonoTouch/FrameworkList.xml) and add it to the `RedistList`-folder. 
 
-## Why the .NETFramework\v1.0 folder?
+## Why the v1.0 folder?
 The reason for the ".NETFramework\v1.0" location on your PC is how MonoTouch specify the 
 `<TargetFrameworkVersion>v1.0</TargetFrameworkVersion>` in the .cproj file. 
 If the `<TargetFrameworkIdentifier>` isn't specified Visual Studio will default to `.NETFramework`, 

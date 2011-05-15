@@ -140,6 +140,7 @@
     <None Include="Key.snk" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Resources\iPhone.bmp" />
     <Content Include="Resources\Package.ico" />
   </ItemGroup>
   <PropertyGroup>

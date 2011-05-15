@@ -124,7 +124,7 @@ namespace Follesoe.VSMonoTouch
         {
             string projectTypeGuids = ProjectUtils.GetProjectTypeGuids(project);
             return projectTypeGuids.Contains(GuidList.guidMonoTouchProjectFactory);
-        }
+        }     
     }
 
     [ComVisible(false)]
@@ -141,7 +141,7 @@ namespace Follesoe.VSMonoTouch
         protected override object PreCreateForOuter(IntPtr outerProjectIUnknown)
         {
             return new MonoTouchFlavePackageProject(_package);
-        }
+        }    
     }
 
     [ComVisible(true)]

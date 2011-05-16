@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 using EnvDTE;
-
+using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Flavor;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -33,7 +33,7 @@ namespace Follesoe.VSMonoTouch
         {
             RegisterProjectFactory(new MonoTouchFlavorProjectFactory(this));
             
-            _dte = GetGlobalService(typeof(SDTE)) as DTE;
+            _dte = GetGlobalService(typeof(SDTE)) as DTE;         
 
             if (_dte != null)
             {
@@ -73,11 +73,12 @@ namespace Follesoe.VSMonoTouch
         }
 
         private void FindXibs(Project project, List<ProjectItem> xibs)
-        {
+        {            
             if (project.ConfigurationManager != null)
             {
                 if (IsMonoTouchProject(project))
                 {
+                    var vsProject = (VSLangProj.VSProject)project.Object;                    
                     FindXibs(project.ProjectItems, xibs);
                 }
             }

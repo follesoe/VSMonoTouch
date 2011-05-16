@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.Shell.Interop;
 using EnvDTE;
+using IServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
 namespace Follesoe.VSMonoTouch
 {
@@ -38,13 +39,12 @@ namespace Follesoe.VSMonoTouch
         {
 
             object service = null;
-            Microsoft.VisualStudio.OLE.Interop.IServiceProvider serviceProvider;
             IntPtr serviceIntPtr;
             int hr;
 
             Guid SIDGuid = guid;
             Guid IIDGuid = SIDGuid;
-            serviceProvider = (Microsoft.VisualStudio.OLE.Interop.IServiceProvider)serviceProviderObject;
+            var serviceProvider = (IServiceProvider)serviceProviderObject;
             hr = serviceProvider.QueryService(ref SIDGuid, ref IIDGuid, out serviceIntPtr);
 
             if (hr != 0)

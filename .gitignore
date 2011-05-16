@@ -6,5 +6,7 @@ _ReSharper*
 bin
 obj
 
+*.suo
+
 # mstest test results
 TestResults

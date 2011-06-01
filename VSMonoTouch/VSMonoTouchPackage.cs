@@ -28,17 +28,23 @@ namespace Follesoe.VSMonoTouch
     public sealed class VSMonoTouchPackage : Package
     {
         private DTE _dte;
+        private BuildEvents _BuildEvents;
 
         protected override void Initialize()
         {
             RegisterProjectFactory(new MonoTouchFlavorProjectFactory(this));
             
-            _dte = GetGlobalService(typeof(SDTE)) as DTE;         
+            _dte = GetGlobalService(typeof(SDTE)) as DTE;
 
             if (_dte != null)
             {
-                _dte.Events.BuildEvents.OnBuildBegin += MakeXibsNone;
-                _dte.Events.BuildEvents.OnBuildDone += MakeXibsPage;
+                _BuildEvents = _dte.Events.BuildEvents;
+                _BuildEvents.OnBuildBegin += MakeXibsNone;
+                _BuildEvents.OnBuildDone += MakeXibsPage;
+            }
+            else
+            {
+                throw new Exception();
             }
 
             base.Initialize();

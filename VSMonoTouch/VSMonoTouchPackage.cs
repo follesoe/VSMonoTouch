@@ -28,7 +28,7 @@ namespace Follesoe.VSMonoTouch
     public sealed class VSMonoTouchPackage : Package
     {
         private DTE _dte;
-		private BuildEvents _BuildEvents;
+        private BuildEvents _BuildEvents;
 
         protected override void Initialize()
         {
@@ -36,23 +36,23 @@ namespace Follesoe.VSMonoTouch
             
             _dte = GetGlobalService(typeof(SDTE)) as DTE;
 
-			if (_dte != null)
-			{
-				_BuildEvents = _dte.Events.BuildEvents;
-				_BuildEvents.OnBuildBegin += MakeXibsNone;
-				_BuildEvents.OnBuildDone += MakeXibsPage;
-			}
-			else
-			{
-				throw new Exception();
-			}
+            if (_dte != null)
+            {
+                _BuildEvents = _dte.Events.BuildEvents;
+                _BuildEvents.OnBuildBegin += MakeXibsNone;
+                _BuildEvents.OnBuildDone += MakeXibsPage;
+            }
+            else
+            {
+                throw new Exception();
+            }
 
             base.Initialize();
         }
 
         private void MakeXibsNone(vsBuildScope scope, vsBuildAction action)
         {
-			var xibs = FindAllXibsInSolution();
+            var xibs = FindAllXibsInSolution();
             foreach(var xib in xibs)
             {
                 xib.Properties.Item("ItemType").Value = "None";
@@ -61,7 +61,7 @@ namespace Follesoe.VSMonoTouch
 
         private void MakeXibsPage(vsBuildScope Scope, vsBuildAction Action)
         {
-			var xibs = FindAllXibsInSolution();
+            var xibs = FindAllXibsInSolution();
             foreach (var xib in xibs)
             {
                 xib.Properties.Item("ItemType").Value = "Page";

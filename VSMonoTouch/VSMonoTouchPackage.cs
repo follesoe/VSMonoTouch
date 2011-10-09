@@ -121,7 +121,8 @@ namespace Follesoe.VSMonoTouch
                     } 
                     else if(File.Exists(fileName))
                     {
-                        if(Path.GetExtension(fileName).ToLower().Equals(".xib"))
+                        var ext = Path.GetExtension(fileName);
+                        if(!string.IsNullOrEmpty(ext) && ext.ToLower().Equals(".xib"))
                         {
                             xibs.Add(item);
                         }
@@ -139,13 +140,11 @@ namespace Follesoe.VSMonoTouch
         }     
     }
 
-    [ComVisible(false)]
-    [Guid(GuidList.guidMonoTouchProjectFactory26)]
-    public class MonoTouch26FlavorProjectFactory : FlavoredProjectFactoryBase
-    {        
-        private readonly VSMonoTouchPackage _package;
+    public abstract class MonoTouchFlavorProjectFactory : FlavoredProjectFactoryBase
+    {
+        protected readonly VSMonoTouchPackage _package;
 
-        public MonoTouch26FlavorProjectFactory(VSMonoTouchPackage package)
+        protected MonoTouchFlavorProjectFactory(VSMonoTouchPackage package)
         {
             _package = package;
         }
@@ -153,24 +152,21 @@ namespace Follesoe.VSMonoTouch
         protected override object PreCreateForOuter(IntPtr outerProjectIUnknown)
         {
             return new MonoTouchFlavePackageProject(_package);
-        }    
+        }  
+    }
+
+    [ComVisible(false)]
+    [Guid(GuidList.guidMonoTouchProjectFactory26)]
+    public class MonoTouch26FlavorProjectFactory : MonoTouchFlavorProjectFactory
+    {
+        public MonoTouch26FlavorProjectFactory(VSMonoTouchPackage package) : base(package) {}
     }
 
     [ComVisible(false)]
     [Guid(GuidList.guidMonoTouchProjectFactory28)]
-    public class MonoTouch28FlavorProjectFactory : FlavoredProjectFactoryBase
+    public class MonoTouch28FlavorProjectFactory : MonoTouchFlavorProjectFactory
     {
-        private readonly VSMonoTouchPackage _package;
-
-        public MonoTouch28FlavorProjectFactory(VSMonoTouchPackage package)
-        {
-            _package = package;
-        }
-
-        protected override object PreCreateForOuter(IntPtr outerProjectIUnknown)
-        {
-            return new MonoTouchFlavePackageProject(_package);
-        }
+        public MonoTouch28FlavorProjectFactory(VSMonoTouchPackage package) : base(package) {}
     }
 
 

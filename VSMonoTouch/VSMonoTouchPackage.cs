@@ -11,6 +11,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Follesoe.VSMonoTouch
 {
+
     /// <summary>
     /// This is the class that implements the package exposed by this assembly.
     ///
@@ -21,7 +22,8 @@ namespace Follesoe.VSMonoTouch
     /// IVsPackage interface and uses the registration attributes defined in the framework to 
     /// register itself and its components with the shell.
     /// </summary>
-    [ProvideProjectFactory(typeof(MonoTouchFlavorProjectFactory), "MonoTouch Flavor", "Mono Files (*.csproj);*.csproj", null, null, null)]
+    [ProvideProjectFactory(typeof(MonoTouch26FlavorProjectFactory), "MonoTouch Flavor", "Mono Files (*.csproj);*.csproj", null, null, null)]
+    [ProvideProjectFactory(typeof(MonoTouch28FlavorProjectFactory), "MonoTouch Flavor", "Mono Files (*.csproj);*.csproj", null, null, null)]
     [PackageRegistration(UseManagedResourcesOnly = true)]
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)]
     [Guid(GuidList.guidVSMonoTouchPkgString)]
@@ -32,7 +34,8 @@ namespace Follesoe.VSMonoTouch
 
         protected override void Initialize()
         {
-            RegisterProjectFactory(new MonoTouchFlavorProjectFactory(this));
+            RegisterProjectFactory(new MonoTouch26FlavorProjectFactory(this));
+            RegisterProjectFactory(new MonoTouch28FlavorProjectFactory(this));
             
             _dte = GetGlobalService(typeof(SDTE)) as DTE;
 
@@ -59,7 +62,7 @@ namespace Follesoe.VSMonoTouch
             }
         }
 
-        private void MakeXibsPage(vsBuildScope Scope, vsBuildAction Action)
+        private void MakeXibsPage(vsBuildScope scope, vsBuildAction action)
         {
             var xibs = FindAllXibsInSolution();
             foreach (var xib in xibs)
@@ -118,7 +121,8 @@ namespace Follesoe.VSMonoTouch
                     } 
                     else if(File.Exists(fileName))
                     {
-                        if(Path.GetExtension(fileName).ToLower().Equals(".xib"))
+                        var ext = Path.GetExtension(fileName);
+                        if(!string.IsNullOrEmpty(ext) && ext.ToLower().Equals(".xib"))
                         {
                             xibs.Add(item);
                         }
@@ -130,17 +134,17 @@ namespace Follesoe.VSMonoTouch
         private static bool IsMonoTouchProject(Project project)
         {
             string projectTypeGuids = ProjectUtils.GetProjectTypeGuids(project);
-            return projectTypeGuids.Contains(GuidList.guidMonoTouchProjectFactory);
+            if (projectTypeGuids.Contains(GuidList.guidMonoTouchProjectFactory26)) return true;
+            if (projectTypeGuids.Contains(GuidList.guidMonoTouchProjectFactory28)) return true;
+            return false;
         }     
     }
 
-    [ComVisible(false)]
-    [Guid(GuidList.guidMonoTouchProjectFactory)]
-    public class MonoTouchFlavorProjectFactory : FlavoredProjectFactoryBase
-    {        
-        private readonly VSMonoTouchPackage _package;
+    public abstract class MonoTouchFlavorProjectFactory : FlavoredProjectFactoryBase
+    {
+        protected readonly VSMonoTouchPackage _package;
 
-        public MonoTouchFlavorProjectFactory(VSMonoTouchPackage package)
+        protected MonoTouchFlavorProjectFactory(VSMonoTouchPackage package)
         {
             _package = package;
         }
@@ -148,8 +152,23 @@ namespace Follesoe.VSMonoTouch
         protected override object PreCreateForOuter(IntPtr outerProjectIUnknown)
         {
             return new MonoTouchFlavePackageProject(_package);
-        }    
+        }  
     }
+
+    [ComVisible(false)]
+    [Guid(GuidList.guidMonoTouchProjectFactory26)]
+    public class MonoTouch26FlavorProjectFactory : MonoTouchFlavorProjectFactory
+    {
+        public MonoTouch26FlavorProjectFactory(VSMonoTouchPackage package) : base(package) {}
+    }
+
+    [ComVisible(false)]
+    [Guid(GuidList.guidMonoTouchProjectFactory28)]
+    public class MonoTouch28FlavorProjectFactory : MonoTouchFlavorProjectFactory
+    {
+        public MonoTouch28FlavorProjectFactory(VSMonoTouchPackage package) : base(package) {}
+    }
+
 
     [ComVisible(true)]
     [ClassInterface(ClassInterfaceType.None)]

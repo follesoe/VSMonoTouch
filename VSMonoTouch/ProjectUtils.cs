@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using Microsoft.VisualStudio.Shell.Flavor;
 using Microsoft.VisualStudio.Shell.Interop;
 using EnvDTE;
 using IServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
@@ -10,20 +11,21 @@ namespace Follesoe.VSMonoTouch
     {
         public static string GetProjectTypeGuids(Project proj)
         {
-            string projectTypeGuids = "";
+            var projectTypeGuids = "";
             IVsHierarchy hierarchy;
-            IVsAggregatableProject aggregatableProject;
-            int result;
 
-            object service = GetService(proj.DTE, typeof(IVsSolution));
+            var service = GetService(proj.DTE, typeof(IVsSolution));
             var solution = (IVsSolution)service;
 
-            result = solution.GetProjectOfUniqueName(proj.UniqueName, out hierarchy);
+            var result = solution.GetProjectOfUniqueName(proj.UniqueName, out hierarchy);
 
             if (result == 0)
             {
-                aggregatableProject = (IVsAggregatableProject)hierarchy;
-                aggregatableProject.GetAggregateProjectTypeGuids(out projectTypeGuids);
+                if (hierarchy is IVsAggregatableProjectCorrected)
+                {
+                    var aggregatableProject = (IVsAggregatableProjectCorrected)hierarchy;                    
+                    aggregatableProject.GetAggregateProjectTypeGuids(out projectTypeGuids);
+                }
             }
 
             return projectTypeGuids;
@@ -40,12 +42,11 @@ namespace Follesoe.VSMonoTouch
 
             object service = null;
             IntPtr serviceIntPtr;
-            int hr;
 
-            Guid SIDGuid = guid;
-            Guid IIDGuid = SIDGuid;
+            var sidGuid = guid;
+            var iidGuid = sidGuid;
             var serviceProvider = (IServiceProvider)serviceProviderObject;
-            hr = serviceProvider.QueryService(ref SIDGuid, ref IIDGuid, out serviceIntPtr);
+            var hr = serviceProvider.QueryService(ref sidGuid, ref iidGuid, out serviceIntPtr);
 
             if (hr != 0)
             {

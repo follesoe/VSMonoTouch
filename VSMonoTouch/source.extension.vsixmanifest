@@ -3,7 +3,7 @@
   <Identifier Id="4e51e215-eb16-4614-b6d2-92e6e1d8c204">
     <Name>MonoTouch for Visual Studio 2010</Name>
     <Author>Follesoe</Author>
-    <Version>1.0</Version>
+    <Version>1.2</Version>
     <Description xml:space="preserve">Load and build MonoTouch projects in Visual Studio 2010</Description>
     <Locale>1033</Locale>
     <MoreInfoUrl>https://github.com/follesoe/VSMonoTouch</MoreInfoUrl>

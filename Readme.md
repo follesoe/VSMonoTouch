@@ -16,7 +16,7 @@ Visual Studio when editing code. You can also use the [Project Linker Synchroniz
 to automatically keep Windows Phone, Mono for Android and MonoTouch class libraries in sync.
 
 ## Installation
-1. [Download and run the vsix-package](https://github.com/downloads/follesoe/VSMonoTouch/VSMonoTouch.vsix)
+1. [Download and run the vsix-package](https://github.com/downloads/follesoe/VSMonoTouch/VSMonoTouch%201.2.vsix)
 from the github page.
 
 2. Copy the MonoTouch binaries from your Mac development environment to your Visual Studio 2010 development environment.

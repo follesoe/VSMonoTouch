@@ -2,7 +2,7 @@
 <Vsix xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="1.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2010">
   <Identifier Id="4e51e215-eb16-4614-b6d2-92e6e1d8c204">
     <Name>MonoTouch for Visual Studio 2010</Name>
-    <Author>Follesoe</Author>
+    <Author>Jonas Follesø, David Jade, Lunat1k, </Author>
     <Version>1.2</Version>
     <Description xml:space="preserve">Load and build MonoTouch projects in Visual Studio 2010</Description>
     <Locale>1033</Locale>

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
-
+using System.Runtime.Versioning;
 using EnvDTE;
-using EnvDTE80;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Flavor;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -22,35 +23,44 @@ namespace Follesoe.VSMonoTouch
     /// IVsPackage interface and uses the registration attributes defined in the framework to 
     /// register itself and its components with the shell.
     /// </summary>
-    [ProvideProjectFactory(typeof(MonoTouch26FlavorProjectFactory), "MonoTouch Flavor", "Mono Files (*.csproj);*.csproj", null, null, null)]
-    [ProvideProjectFactory(typeof(MonoTouch28FlavorProjectFactory), "MonoTouch Flavor", "Mono Files (*.csproj);*.csproj", null, null, null)]
+    [ProvideProjectFactory(typeof(MonoTouch26FlavorProjectFactory), "MonoTouch Flavor", "Mono Files (*.csproj);*.csproj", "csproj", "csproj", null)]
+    [ProvideProjectFactory(typeof(MonoTouch28FlavorProjectFactory), "MonoTouch Flavor", "Mono Files (*.csproj);*.csproj", "csproj", "csproj", null)]
     [PackageRegistration(UseManagedResourcesOnly = true)]
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)]
     [Guid(GuidList.guidVSMonoTouchPkgString)]
     public sealed class VSMonoTouchPackage : Package
     {
         private DTE _dte;
-        private BuildEvents _BuildEvents;
+        private BuildEvents _buildEvents;
+        private readonly SolutionEvents _solutionEvents = new SolutionEvents();
+        private uint _solutionEventsCookie;
+        private IVsSolution _solution;
 
         protected override void Initialize()
         {
             RegisterProjectFactory(new MonoTouch26FlavorProjectFactory(this));
-            RegisterProjectFactory(new MonoTouch28FlavorProjectFactory(this));
-            
-            _dte = GetGlobalService(typeof(SDTE)) as DTE;
+            RegisterProjectFactory(new MonoTouch28FlavorProjectFactory(this));           
 
-            if (_dte != null)
-            {
-                _BuildEvents = _dte.Events.BuildEvents;
-                _BuildEvents.OnBuildBegin += MakeXibsNone;
-                _BuildEvents.OnBuildDone += MakeXibsPage;
-            }
-            else
-            {
-                throw new Exception();
-            }
+            _dte = GetService(typeof(SDTE)) as DTE;
+            if (_dte == null) throw new Exception("DTE Reference Not Found");
 
+            _buildEvents = _dte.Events.BuildEvents;
+            _buildEvents.OnBuildBegin += MakeXibsNone;
+            _buildEvents.OnBuildDone += MakeXibsPage;
+
+            _solution = (IVsSolution)GetService(typeof(SVsSolution));
+            if (_solution == null) throw new Exception("IVSSolution Reference Not Found.");                
+            _solution.AdviseSolutionEvents(_solutionEvents, out _solutionEventsCookie);
+                        
             base.Initialize();
+        }
+
+        protected override int QueryClose(out bool canClose)
+        {
+            if (_solutionEventsCookie != 0 && _solution != null)
+                _solution.UnadviseSolutionEvents(_solutionEventsCookie);
+
+            return base.QueryClose(out canClose);
         }
 
         private void MakeXibsNone(vsBuildScope scope, vsBuildAction action)
@@ -85,11 +95,7 @@ namespace Follesoe.VSMonoTouch
         {            
             if (project.ConfigurationManager != null)
             {
-                if (IsMonoTouchProject(project))
-                {
-                    var vsProject = (VSLangProj.VSProject)project.Object;                    
-                    FindXibs(project.ProjectItems, xibs);
-                }
+                if (IsMonoTouchProject(project)) FindXibs(project.ProjectItems, xibs);
             }
             else
             {
@@ -99,13 +105,11 @@ namespace Follesoe.VSMonoTouch
 
         private void NavigateProjectItems(ProjectItems items, List<ProjectItem> xibs)
         {
-            foreach (ProjectItem item in items)
+            if (items == null) return;
+            items.Cast<ProjectItem>().ToList().ForEach(pi =>
             {
-                if (item.SubProject != null)
-                {
-                    FindXibs(item.SubProject, xibs);
-                }
-            }
+                if (pi.SubProject != null) FindXibs(pi.SubProject, xibs);
+            });
         }
 
         private static void FindXibs(ProjectItems items, List<ProjectItem> xibs)
@@ -131,27 +135,101 @@ namespace Follesoe.VSMonoTouch
             }       
         }
 
-        private static bool IsMonoTouchProject(Project project)
+        internal static bool IsMonoTouchProject(Project project)
         {
-            string projectTypeGuids = ProjectUtils.GetProjectTypeGuids(project);
+            var projectTypeGuids = ProjectUtils.GetProjectTypeGuids(project);
+
             if (projectTypeGuids.Contains(GuidList.guidMonoTouchProjectFactory26)) return true;
             if (projectTypeGuids.Contains(GuidList.guidMonoTouchProjectFactory28)) return true;
+
             return false;
         }     
     }
 
+    public sealed class SolutionEvents : IVsSolutionEvents
+    {
+        public int OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded)
+        {
+            const string targetFrameworkMoniker = "TargetFrameworkMoniker";
+
+            object projectObj;
+            pHierarchy.GetProperty(VSConstants.VSITEMID_ROOT, (int)__VSHPROPID.VSHPROPID_ExtObject, out projectObj);
+            var project = (Project) projectObj;
+
+            if (VSMonoTouchPackage.IsMonoTouchProject(project))
+            {
+                var v10FrameworkName = (new FrameworkName(".NETFramework", new Version(1, 0))).FullName;
+                var item = project.Properties.Item(targetFrameworkMoniker);
+                if (item != null)
+                {
+                    if (item.Value == null || (string)item.Value != v10FrameworkName) item.Value = v10FrameworkName;
+                }
+                else
+                {
+                    project.Properties.Item(targetFrameworkMoniker).Value = v10FrameworkName;
+                }
+            }
+            return VSConstants.S_OK;
+        }
+
+        public int OnQueryCloseProject(IVsHierarchy pHierarchy, int fRemoving, ref int pfCancel)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnBeforeCloseProject(IVsHierarchy pHierarchy, int fRemoved)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnAfterLoadProject(IVsHierarchy pStubHierarchy, IVsHierarchy pRealHierarchy)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnQueryUnloadProject(IVsHierarchy pRealHierarchy, ref int pfCancel)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnBeforeUnloadProject(IVsHierarchy pRealHierarchy, IVsHierarchy pStubHierarchy)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnAfterOpenSolution(object pUnkReserved, int fNewSolution)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnQueryCloseSolution(object pUnkReserved, ref int pfCancel)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnBeforeCloseSolution(object pUnkReserved)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnAfterCloseSolution(object pUnkReserved)
+        {
+            return VSConstants.S_OK;
+        }
+    }
+
     public abstract class MonoTouchFlavorProjectFactory : FlavoredProjectFactoryBase
     {
-        protected readonly VSMonoTouchPackage _package;
+        protected readonly VSMonoTouchPackage Package;
 
         protected MonoTouchFlavorProjectFactory(VSMonoTouchPackage package)
         {
-            _package = package;
+            Package = package;
         }
 
         protected override object PreCreateForOuter(IntPtr outerProjectIUnknown)
         {
-            return new MonoTouchFlavePackageProject(_package);
+            return new MonoTouchFlavePackageProject(Package);
         }  
     }
 

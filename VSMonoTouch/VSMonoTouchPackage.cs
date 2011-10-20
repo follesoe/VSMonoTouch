@@ -35,6 +35,7 @@ namespace Follesoe.VSMonoTouch
         private readonly SolutionEvents _solutionEvents = new SolutionEvents();
         private uint _solutionEventsCookie;
         private IVsSolution _solution;
+		private string XibBuildType = null;
 
         protected override void Initialize()
         {
@@ -68,6 +69,7 @@ namespace Follesoe.VSMonoTouch
             var xibs = FindAllXibsInSolution();
             foreach(var xib in xibs)
             {
+				if (XibBuildType == null) XibBuildType = (string)(xib.Properties.Item("ItemType").Value);
                 xib.Properties.Item("ItemType").Value = "None";
             }
         }
@@ -77,7 +79,7 @@ namespace Follesoe.VSMonoTouch
             var xibs = FindAllXibsInSolution();
             foreach (var xib in xibs)
             {
-                xib.Properties.Item("ItemType").Value = "Page";
+				xib.Properties.Item("ItemType").Value = XibBuildType;
             }
         }
 

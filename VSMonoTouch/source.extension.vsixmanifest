@@ -1,22 +1,27 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Vsix xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="1.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2010">
 	<Identifier Id="4e51e215-eb16-4614-b6d2-92e6e1d8c204">
-		<Name>MonoTouch for Visual Studio 2010</Name>
-		<Author>Jonas Follesø, David Jade, Lunat1k, </Author>
-		<Version>1.21</Version>
-		<Description xml:space="preserve">Load and build MonoTouch projects in Visual Studio 2010</Description>
+		<Name>MonoTouch for Visual Studio 2010 and 2012</Name>
+		<Author>Jonas Follesø, David Jade, Lunat1k</Author>
+		<Version>1.3</Version>
+		<Description xml:space="preserve">Load and build MonoTouch projects in Visual Studio 2010 and 2012</Description>
 		<Locale>1033</Locale>
 		<MoreInfoUrl>https://github.com/follesoe/VSMonoTouch</MoreInfoUrl>
 		<GettingStartedGuide>https://github.com/follesoe/VSMonoTouch</GettingStartedGuide>
 		<InstalledByMsi>false</InstalledByMsi>
 		<SupportedProducts>
 			<VisualStudio Version="10.0">
-				<Edition>Ultimate</Edition>
+				<Edition>Utimate</Edition>
+				<Edition>Premium</Edition>
+				<Edition>Pro</Edition>
+			</VisualStudio>
+			<VisualStudio Version="11.0">
+				<Edition>Utimate</Edition>
 				<Edition>Premium</Edition>
 				<Edition>Pro</Edition>
 			</VisualStudio>
 		</SupportedProducts>
-		<SupportedFrameworkRuntimeEdition MinVersion="4.0" MaxVersion="4.0" />
+		<SupportedFrameworkRuntimeEdition MinVersion="4.0" />
 	</Identifier>
 	<References>
 		<Reference Id="Microsoft.VisualStudio.MPF" MinVersion="10.0">

@@ -57,7 +57,7 @@ just fine in MonoDevelop. The next update of the extension will enable you to au
 reference if missing.
 
 ## Contributing ##
-The extension supports both Visual Studio 2010 & 2012, while development is done in Visual Studio 2012. In order to build and contribute to the project you must have both Visual Studio 2010 & 2012, as well as the Visual Studio SDK for both 2010 & 2012 installed.
+The extension supports both Visual Studio 2010 & 2012, while development is done in Visual Studio 2012. In order to build and contribute to the project you must have both Visual Studio 2010 & 2012 and their SDKs installed.
 
 ## Credit & Contributers ##
 The MonoTouchFlavorProjectFactory is based on [Jamie Briant's implementationn](https://github.com/jamiebriant/VsMono).

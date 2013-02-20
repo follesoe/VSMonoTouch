@@ -10,3 +10,6 @@ obj
 
 # mstest test results
 TestResults
+
+# Mac directories
+.DS_Store
